@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SVG Circle Drawing Tool</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .controls {
+            margin-bottom: 10px;
+        }
+
+        svg {
+            width: 95vw;
+            height: 80vh;
+            border: 2px solid #333;
+            background: white;
+            cursor: crosshair;
+        }
+
+        button {
+            padding: 6px 12px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2>SVG Circle Drawing Tool</h2>
+
+<div class="controls">
+    <label>Choose Color:</label>
+    <input type="color" id="colorPicker" value="#ff0000">
+    <button onclick="undo()">Undo</button>
+</div>
+
+<svg id="svgCanvas"></svg>
+
+<script>
+    const svg = document.getElementById("svgCanvas");
+    const colorPicker = document.getElementById("colorPicker");
+
+    let isDrawing = false;
+    let startX, startY;
+    let currentCircle = null;
+
+    svg.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+
+        startX = e.offsetX;
+        startY = e.offsetY;
+
+        currentCircle = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "circle"
+        );
+
+        currentCircle.setAttribute("cx", startX);
+        currentCircle.setAttribute("cy", startY);
+        currentCircle.setAttribute("r", 0);
+        currentCircle.setAttribute("fill", colorPicker.value);
+        currentCircle.setAttribute("stroke", "black");
+        currentCircle.setAttribute("stroke-width", 1);
+
+        svg.appendChild(currentCircle);
+    });
+
+    svg.addEventListener("mousemove", (e) => {
+        if (!isDrawing) return;
+
+        const dx = e.offsetX - startX;
+        const dy = e.offsetY - startY;
+        const radius = Math.sqrt(dx * dx + dy * dy);
+
+        currentCircle.setAttribute("r", radius);
+    });
+
+    svg.addEventListener("mouseup", () => {
+        isDrawing = false;
+        currentCircle = null;
+    });
+
+    function undo() {
+        if (svg.lastChild) {
+            svg.removeChild(svg.lastChild);
+        }
+    }
+</script>
+
+</body>
+</html>
